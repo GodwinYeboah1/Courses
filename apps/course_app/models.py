@@ -5,14 +5,24 @@ from django.db import models
 class CourseManager(models.Manager):
     
     def validate(self, postdata):
-        errors = {}
+        response = {}
+        
+        if len(postdata['name']) < 5 :
+            response['name'] = 'Course name has to be greater then 3'
 
-        if len(postdata['name']) < 3:
-            errors['name'] = 'Course name has to be greater then 3'
+        if len(postdata['desc']) < 15:
+            response['desc'] = 'Description name has to be greater then 15'
 
-        if len(postdata['desc']) < 3:
-            errors['desc'] = 'Description name has to be greater then 3'
-        return errors
+        return response
+
+    def create_course(self,postdata):
+        response = {
+            "course": None
+        }
+        course_data = Course(name=postdata['name'],desc=postdata['desc'])
+        course_data.save()
+        response['course'] = course_data
+        return response
         
 class Course(models.Model):
     name = models.CharField(max_length=255)

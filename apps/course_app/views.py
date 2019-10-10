@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import Course
+from django.contrib import messages
 
 # Create your views here.
 def index(req):
@@ -7,8 +8,17 @@ def index(req):
     return render(req, "index.html",context)
 
 def create(req):
-    newcourse = Course.objects.create(name=req.POST['name'], desc=req.POST['desc'])
-    newcourse.save()
+    # i want to validate the data
+    errors = Course.objects.validate(req.POST)
+    # if error error out a message
+    if len(errors):
+        for key, value in errors.items():
+            messages.error(req, value)
+        return redirect('/')
+    else:
+    # if not save user 
+        Course.objects.create_course(req.POST)
+        
     return redirect('/')
 
 
